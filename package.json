@@ -8,6 +8,7 @@
     "bcryptjs": "^2.4.3",
     "config": "^3.3.6",
     "esm": "^3.2.25",
+    "express": "^4.17.1",
     "express-validator": "^6.12.1",
     "mongoose": "^6.0.5"
   },
