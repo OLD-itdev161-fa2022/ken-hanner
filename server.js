@@ -10,7 +10,7 @@ connectDatabase();
 
 // configure middleware
 app.use(express.json({ extended: false }));
-
+ 
 // API endpoints
 /**
  * @route GET /
