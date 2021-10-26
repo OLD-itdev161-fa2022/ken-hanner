@@ -5,3 +5,10 @@ const Login = () => {
 }
 
 export default Login;
+
+// <Route path="/register">
+//                 Register
+//               </Route>
+//               <Route path="/login">
+//                 Login 
+//               </Route>
