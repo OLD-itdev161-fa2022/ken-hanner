@@ -8,22 +8,22 @@ import Login from './components/Login/Login';
 class App extends React.Component {
   state = {
     data: null,
-    toiken: null,
+    token: null,
     user: null
   }
 
   componentDidMount() {
     axios.get('http://localhost:5000')
-    .then((response) => {
-      this.setState({
-        data: response.data
+      .then((response) => {
+        this.setState({
+          data: response.data
+        })
       })
-    })
-    .catch((error) => {
-      console.error(`Error fetching data: ${error}`);
-    })
+      .catch((error) => {
+        console.error(`Error fetching data: ${error}`);
+      })
 
-    this.authenticateUser();
+      this.authenticateUser();
   }
 
   authenticateUser = () => {
@@ -78,16 +78,17 @@ class App extends React.Component {
                 <Link to="/register">Register</Link>
               </li>
               <li>
-                {user ?
+                {user ? 
                   <Link to="" onClick={this.logOut}>Log out</Link> :
-                  <Link to="/login">Login</Link>
+                  <Link to="/login">Log in</Link> 
                 }
+                
               </li>
             </ul>
           </header>
           <main>
             <Route exact path="/">
-              {user ?
+              {user ? 
                 <React.Fragment>
                   <div>Hello {user}!</div>
                   <div>{data}</div>
@@ -96,13 +97,14 @@ class App extends React.Component {
                   Please Register or Login
                 </React.Fragment>
               }
+              
             </Route>
             <Switch>
-              <Route
-                exact path="/register"
+              <Route 
+                exact path="/register" 
                 render={() => <Register {...authProps} />} />
-              <Route
-                exact path="/login"
+              <Route 
+                exact path="/login" 
                 render={() => <Login {...authProps} />} />
             </Switch>
           </main>
@@ -112,4 +114,4 @@ class App extends React.Component {
   }
 }
 
-export default App; 
+export default App;
