@@ -155,7 +155,7 @@ class App extends React.Component {
               )}
             </Route>
             <Route path="/posts/:postId">
-                <Post post={post} />
+                <Post post={posts} />
             </Route>
             <Switch>
               <Route 
