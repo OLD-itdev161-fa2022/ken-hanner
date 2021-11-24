@@ -293,13 +293,15 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-// Serve build files in production
+
+//serve build files in production
 if (process.env.NODE_ENV === 'production') {
-  // Set the build folder
+  //set the build folder
   app.use(express.static('client/build'));
 
-  // Route all requests to serve up the built index file
-  // (i.e., [current working directory]/client/build/index.html)
+  //route all requests to serve up the built index file
+  //(ie, [current working directory]/client/build/index.html)
+
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
