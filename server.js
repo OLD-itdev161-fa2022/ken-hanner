@@ -5,23 +5,23 @@ import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import config from 'config';
-import Post from './models/Post';
 import User from './models/User';
+import Post from './models/Post';
 import auth from './middleware/auth';
 import path from 'path';
 
 // Initialize express application
 const app = express();
 
-// connect database
+// Connect database
 connectDatabase();
 
-// configure middleware
+// Configure Middleware
 app.use(express.json({ extended: false }));
 app.use(
-    cors({
-        origin: 'http://localhost:3000'
-    })
+  cors({
+    origin: 'http://localhost:3000'
+  })
 );
 
 // API endpoints
@@ -30,66 +30,66 @@ app.use(
  * @desc Register user
  */
 app.post(
-    '/api/users',
-    [
-        check('name', 'Please enter your name')
-            .not()
-            .isEmpty(),
-        check('email', 'Please enter a valid email').isEmail(),
-        check(
-            'password',
-            'Please enter a password with 6 or more characters'
-        ).isLength({ min: 6 })
-    ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
-        } else {
-            const { name, email, password } = req.body;
-            try {
-                //check if user exists
-                let user = await User.findOne({ email: email });
-                if (user) {
-                    return res
-                    .status(400)
-                    .json({ errors: [{ msg: 'User already exists' }] });
-                }
-
-                //create a new user
-                user = new User({
-                    name: name,
-                    email: email,
-                    password: password
-                });
-
-                //encrypt the password
-                const salt = await bcrypt.genSalt(10);
-                user.password = await bcrypt.hash(password, salt);
-
-                //save to the db and return
-                await user.save();
-                //res.send('User successfully registered');
-
-                //generate and return a JWT token
-                returnToken(user, res);
-            } catch (error) {
-                res.status(500).send('Server error');
-            }
+  '/api/users',
+  [
+    check('name', 'Please enter your name')
+      .not()
+      .isEmpty(),
+    check('email', 'Please enter a valid email').isEmail(),
+    check(
+      'password',
+      'Please enter a password with 6 or more characters'
+    ).isLength({ min: 6 })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    } else {
+      const { name, email, password } = req.body;
+      try {
+        // Check if user exists
+        let user = await User.findOne({ email: email });
+        if (user) {
+          return res
+            .status(400)
+            .json({ errors: [{ msg: 'User already exists' }] });
         }
-    }    
+
+        // Create a new user
+        user = new User({
+          name: name,
+          email: email,
+          password: password
+        });
+
+        // Encrypt the password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        // Save to the db and return
+        await user.save();
+
+        // Generate and return a JWT token
+        returnToken(user, res);
+      } catch (error) {
+        res.status(500).send('Server error');
+      }
+    }
+  }
 );
+
 /**
  * @route GET api/auth
- * @desc Authenticate user
+ * @desc Authorize user
  */
 app.get('/api/auth', auth, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id);
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).send('Unknown server error');
-    }
+  try {
+    const user = await User.findById(req.user.id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send('Unknown server error');
+  }
 });
 
 /**
@@ -97,59 +97,59 @@ app.get('/api/auth', auth, async (req, res) => {
  * @desc Login user
  */
 app.post(
-    '/api/login',
-    [
-        check('email', 'Please enter a valid email').isEmail(),
-        check('password', 'A password is required').exists()
-    ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
-        } else {
-            const { email, password } = req.body;
-            try {
-                // check if user exists
-                let user = await User.findOne({ email: email });
-                if (!user) {
-                    return res
-                        .status(400)
-                        .json({ errors: [{ msg: 'Invalid email or password' }] });
-                }
-
-                //check password
-                const match = await bcrypt.compare(password, user.password);
-                if (!match) {
-                    return res
-                        .status(400)
-                        .json({ errors: [{ msg: 'Invalid email or password' }] });
-                }
-
-                //generate and return a JWT token
-                returnToken(user, res);
-            } catch (error) {
-                res.status(500).sent('Server error');
-            }
+  '/api/login',
+  [
+    check('email', 'Please enter a valid email').isEmail(),
+    check('password', 'A password is required').exists()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    } else {
+      const { email, password } = req.body;
+      try {
+        // Check if user exists
+        let user = await User.findOne({ email: email });
+        if (!user) {
+          return res
+            .status(400)
+            .json({ errors: [{ msg: 'Invalid email or password' }] });
         }
+
+        // Check password
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+          return res
+            .status(400)
+            .json({ errors: [{ msg: 'Invalid email or password' }] });
+        }
+
+        // Generate and return a JWT token
+        returnToken(user, res);
+      } catch (error) {
+        res.status(500).send('Server error');
+      }
     }
+  }
 );
 
 const returnToken = (user, res) => {
-    const payload = {
-        user: {
-            id: user.id
-        }
-    };
+  const payload = {
+    user: {
+      id: user.id
+    }
+  };
 
-    jwt.sign(
-        payload,
-        config.get('jwtSecret'),
-        { expiresIn: '10hr' },
-        (err, token) => {
-            if (err) throw err;
-            res.json({ token: token });
-        }
-    );
+  jwt.sign(
+    payload,
+    config.get('jwtSecret'),
+    { expiresIn: '10hr' },
+    (err, token) => {
+      if (err) throw err;
+      res.json({ token: token });
+    }
+  );
 };
 
 // Post endpoints
@@ -293,13 +293,15 @@ app.put('/api/posts/:id', auth, async (req, res) => {
   }
 });
 
-// Serve build files in production
+
+//serve build files in production
 if (process.env.NODE_ENV === 'production') {
-  // Set the build folder
+  //set the build folder
   app.use(express.static('client/build'));
 
-  // Route all requests to serve up the built index file
-  // (i.e., [current working directory]/client/build/index.html)
+  //route all requests to serve up the built index file
+  //(ie, [current working directory]/client/build/index.html)
+
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
