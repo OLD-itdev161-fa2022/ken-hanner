@@ -39,6 +39,7 @@ const EditPost = ({ token, post, onPostUpdated }) => {
 
         // Create the post
         const body = JSON.stringify(newPost);
+
         const res = await axios.put(
           `/api/posts/${post._id}`,
           body,

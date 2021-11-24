@@ -39,6 +39,7 @@ const CreatePost = ({ token, onPostCreated }) => {
 
         // Create the post
         const body = JSON.stringify(newPost);
+
         const res = await axios.post(
           '/api/posts',
           body,
