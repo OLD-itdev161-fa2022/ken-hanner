@@ -1,3 +1,1 @@
-# ken-hanner
-
-make a small change again, a11 heroku change.
+# Ken Hanner, ITDEV161 Assignment Repository
